@@ -11,6 +11,7 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import IMyItem from "../interfaces/IMyItem";
 const Home = () => {
   const [data, setData] = useState([]);
   const navigate = useNavigate();
@@ -18,22 +19,20 @@ const Home = () => {
     const URL =
       "https://0jj5dyvv79.execute-api.eu-west-1.amazonaws.com/dev/items/7471f91e-9d1f-42f3-bad0-0d145577f6e6";
     const { data } = await axios.get(URL);
-    console.log(typeof data);
-    console.log("data: ", data);
     setData(data);
   };
 
+  const handleRemoveRow = async (item: IMyItem) => {
+    const URL = `https://0jj5dyvv79.execute-api.eu-west-1.amazonaws.com/dev/items/object/${item?.id}/${item?.name}`;
+    const { status } = await axios.post(URL, item, {
+      headers: { "Content-Type": "application/json" },
+    });
+  };
+
   useEffect(() => {
+    console.log(process.env.GET_ALL);
     getData();
   }, []);
-
-  interface IMyItem {
-    creationDate: string;
-    description: string;
-    expireDate: string;
-    id: string;
-    name: string;
-  }
 
   return (
     <div>
@@ -63,7 +62,7 @@ const Home = () => {
                 <TableCell align="left">{row.creationDate}</TableCell>
                 <TableCell align="left">{row.expireDate}</TableCell>
                 <TableCell align="left">
-                  <Button>REMOVE</Button>
+                  <Button onClick={() => handleRemoveRow(row)}>REMOVE</Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -71,7 +70,7 @@ const Home = () => {
         </Table>
       </TableContainer>
       <div style={{ float: "right", marginTop: "10px" }}>
-        <Button variant="outlined" onClick={() => navigate("/details/{}/{}")}>
+        <Button variant="outlined" onClick={() => navigate("/details")}>
           ADD NEW ELEMENT
         </Button>
       </div>

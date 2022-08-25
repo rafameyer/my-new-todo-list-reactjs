@@ -2,24 +2,17 @@ import { Button, Input } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import uuid from "react-uuid";
+import IMyItem from "../interfaces/IMyItem";
 
 const Details = () => {
   const { id, name: nameFromParams } = useParams();
   const navigate = useNavigate();
-  const [data, setData] = useState<IMyItem>();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, setData] = useState<IMyItem>();
   const [name, setName] = useState<string>();
   const [description, setDescription] = useState<string>();
   const [creationDate, setCreationDate] = useState<string>();
   const [expireDate, setExpireDate] = useState<string>();
-
-  interface IMyItem {
-    creationDate: string;
-    description: string;
-    expireDate: string;
-    id: string;
-    name: string;
-  }
 
   const getData = async () => {
     const URL = `https://0jj5dyvv79.execute-api.eu-west-1.amazonaws.com/dev/items/object/${id}/${nameFromParams}`;
@@ -35,16 +28,16 @@ const Details = () => {
     const URL = `https://0jj5dyvv79.execute-api.eu-west-1.amazonaws.com/dev/items`;
 
     const payload: IMyItem = {
-      id: id || uuid(),
-      name: data?.name || "",
-      description: data?.description || "",
-      creationDate: data?.creationDate || "",
-      expireDate: data?.expireDate || "",
+      id: id || "7471f91e-9d1f-42f3-bad0-0d145577f6e6",
+      name: name || "",
+      description: description || "",
+      creationDate: creationDate || "",
+      expireDate: expireDate || "",
     };
-    const { data: respData } = await axios.post(URL, payload, {
+    const { status } = await axios.post(URL, payload, {
       headers: { "Content-Type": "application/json" },
     });
-    console.log("resp: ", respData);
+    if (status === 200) navigate("/");
   };
 
   useEffect(() => {
