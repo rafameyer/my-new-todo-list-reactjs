@@ -1,9 +1,19 @@
+import {
+  Button,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 import axios from "axios";
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 const Home = () => {
   const [data, setData] = useState([]);
+  const navigate = useNavigate();
   const getData = async () => {
     const URL =
       "https://0jj5dyvv79.execute-api.eu-west-1.amazonaws.com/dev/items/7471f91e-9d1f-42f3-bad0-0d145577f6e6";
@@ -12,6 +22,7 @@ const Home = () => {
     console.log("data: ", data);
     setData(data);
   };
+
   useEffect(() => {
     getData();
   }, []);
@@ -24,44 +35,47 @@ const Home = () => {
     name: string;
   }
 
-  const Row = (item: IMyItem) =>
-    useMemo(() => {
-      return (
-        <tr>
-          <td>
-            <Link to={`/details/${item.id}/${item.name}`}>{item.id}</Link>
-          </td>
-          <td>{item.name}</td>
-          <td>{item.description}</td>
-          <td>{item.creationDate}</td>
-          <td>{item.expireDate}</td>
-        </tr>
-      );
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
   return (
-    <>
-      <h1>Home Page!</h1>
-      <>
-        <table>
-          <tbody>
-            <tr>
-              <td>Id</td>
-              <td>Name</td>
-              <td>Description</td>
-              <td>Creation Date</td>
-              <td>Expire Date</td>
-            </tr>
-          </tbody>
-          <tbody>
-            {data.map((item: IMyItem, index) => (
-              <Row key={index} {...item} />
+    <div>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell align="left">NAME</TableCell>
+              <TableCell align="left">DESCRIPTION</TableCell>
+              <TableCell align="left">CREATION DATE</TableCell>
+              <TableCell align="left">EXPIRE DATE</TableCell>
+              <TableCell align="left" />
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.map((row: IMyItem, index: Number) => (
+              <TableRow
+                key={`${row.id}_${index}`}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
+                <TableCell component="th" scope="row">
+                  <Link to={`/details/${row.id}/${row.name}`}>{row.id}</Link>
+                </TableCell>
+                <TableCell align="left">{row.name}</TableCell>
+                <TableCell align="left">{row.description}</TableCell>
+                <TableCell align="left">{row.creationDate}</TableCell>
+                <TableCell align="left">{row.expireDate}</TableCell>
+                <TableCell align="left">
+                  <Button>REMOVE</Button>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-      </>
-    </>
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <div style={{ float: "right", marginTop: "10px" }}>
+        <Button variant="outlined" onClick={() => navigate("/details/{}/{}")}>
+          ADD NEW ELEMENT
+        </Button>
+      </div>
+    </div>
   );
 };
 export default Home;
